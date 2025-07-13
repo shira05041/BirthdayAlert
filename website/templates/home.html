@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}ברוך הבא{% endblock %}
+
+{% block content %}
+<style>
+    .home-container {
+        max-width: 700px;
+        margin: 50px auto;
+        padding: 20px;
+        text-align: center;
+    }
+    .contacts-table {
+        margin-top: 30px;
+        background-color: white;
+        color: black;
+    }
+</style>
+
+<div class="home-container">
+    {% if current_user.is_authenticated %}
+        <p class="lead mb-4">
+            כאן תוכלי להכניס את האנשים שחשובים לך ולקבל תזכורת כשמתקרב יום ההולדת שלהם
+        </p>
+        
+        <div class="mb-3">
+            <a href="{{ url_for('views.add_contact') }}" class="btn btn-success me-2">הוספת אנשי קשר</a>
+            <button onclick="toggleTable()" class="btn btn-primary">הצג / הסתר אנשי קשר</button>
+        </div>
+
+        <div id="contactsTable" class="contacts-table" style="display: none;">
+            {% if contacts %}
+                <table class="table table-striped table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>שם</th>
+                            <th>תאריך לידה</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for contact in contacts %}
+                        <tr>
+                            <td>{{ contact.name }}</td>
+                            <td>{{ contact.date.strftime('%d/%m/%Y') }}</td>
+                            <td>
+                                <a href="{{ url_for('views.edit_contact', id=contact.id) }}" class="btn btn-warning btn-sm">ערוך</a>
+                                <a href="{{ url_for('views.delete_contact', id=contact.id) }}" class="btn btn-danger btn-sm"
+                                   onclick="return confirm('האם אתה בטוח שברצונך למחוק איש קשר זה?');">מחק</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>אין אנשי קשר להצגה</p>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    function toggleTable() {
+        const table = document.getElementById("contactsTable");
+        if (table) {
+            table.style.display = table.style.display === "none" ? "block" : "none";
+        }
+    }
+</script>
+{% endblock %}
